@@ -5,7 +5,7 @@ Email: kangk@onid.oregonstate.edu
 Date: 10/26/14
 Assignment 1
 File: chatserve.cpp
-Summary: Manages connection and chats with chatclient.py; please compile with g++ chatserve.cpp -o chatserve
+Summary: Manages connection and chats with chatclient.py; please compile with g++ chatserve.cpp -o chatserve. Client messages first.
 */
 #include <iostream>
 #include <sys/socket.h>
@@ -30,8 +30,8 @@ struct sockaddr_in servaddr;
 int listenfd, connfd;
 int closeFlag = 0;
 char servName[6] = "Kabir";
-char recMessage[81];
-char message[81];
+char recMessage[501];
+char message[501];
 
 /*
 MAIN FUNCTION
@@ -139,7 +139,7 @@ This function allows the server to receive messages from the client.
  */
 void receiveMessage(int connfd)
 {
-	recv(connfd, recMessage, 80, 0);
+	recv(connfd, recMessage, 500, 0);
 	if (strcmp(recMessage, "\\quit") == 0)
 	{
 		std::cout << "Client has disconnected." << endl;

@@ -4,7 +4,7 @@
 # 10/28/14
 # Assignment 1
 # File: chatclient.py
-# Summary: Chats with chatserve.cpp
+# Summary: Chats with chatserve.cpp. First it creates a connection with listening server, and then it can begin interchange. Client messages first, then server.
 
 # General imports
 import getopt
