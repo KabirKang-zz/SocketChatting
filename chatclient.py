@@ -16,13 +16,11 @@ import signal
 # parse returns a document from input
 import socket 
 
-portNum = 30007
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-sock.connect(("127.0.0.1",portNum)) 
-
 def client():
-    # set up handlers
+    checkArgs();
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((sys.argv[1],int(sys.argv[2])))    
+# set up handlers
     signalfy()
     name = getName(sock)
     var = 1
@@ -51,6 +49,11 @@ def getName(s):
 # Summary: signal handler
 def handleSigs(signum, frame):
 	sys.exit()
+
+def checkArgs():
+    if len(sys.argv) != 3:
+        print "You must use the following syntax: python chatclient.py <host> <port>"
+        sys.exit()
 
 # Summary: Returns messages
 def msgIn(s):
