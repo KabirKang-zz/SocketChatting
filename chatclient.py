@@ -48,7 +48,7 @@ def getName(s):
 
 # Summary: signal handler
 def handleSigs(signum, frame):
-	sys.exit()
+    sys.exit()
 
 def checkArgs():
     if len(sys.argv) != 3:

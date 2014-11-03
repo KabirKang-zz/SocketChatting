@@ -1,3 +1,12 @@
+/*
+Name: Kabir Kang
+Course: CS 372
+Email: kangk@onid.oregonstate.edu
+Date: 10/26/14
+Assignment 1
+File: chatserve.cpp
+Summary: Manages connection and chats with chatclient.py; please compile with g++ chatserve.cpp -o chatserve
+*/
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,11 +21,18 @@ void createSocket(int);
 void bindSocket();
 void listenSocket();
 void acceptConn();
+void receiveMessage(int);
+void sendMessage(int);
+void clearMessages();
+
 
 struct sockaddr_in servaddr;
 int listenfd, connfd;
 int closeFlag = 0;
 char servName[6] = "Kabir";
+char recMessage[81];
+char message[81];
+
 
 int main(int argc, char ** argv)
 {
@@ -67,8 +83,6 @@ void listenSocket()
 
 void acceptConn()
 {
-  char message[81];
-  char recMessage[81];
 
   while(1)
     {
@@ -76,40 +90,56 @@ void acceptConn()
       connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
       std::cout << "Client has connected. Awaiting message... " << endl;
       send(connfd,servName,strlen(servName),0);
-      //char* message="This is a message to send\n\r";
-      while(closeFlag==0)
-	{
-	  memset(&message[0], 0, sizeof(message));
-	  memset(&recMessage[0], 0, sizeof(recMessage));
-	  recv(connfd,recMessage,80,0);
-	  if(strcmp(recMessage,"\\quit")==0)
-	    {
-	      std::cout<<"Client has disconnected." << endl;
-	      closeFlag = 1;
-	    }
-	  if(closeFlag==0)
-	    {
-	      std::cout << "Client> "  << recMessage << endl;
-	      std::cout << servName << "> ";
-	      std::cin.getline(message,81);
 
-	    }
-      if(strcmp(message,"\\quit")==0)
+	  while(closeFlag==0)
 	{
-	  std::cout<<"OK WE'LL QUIT"<<endl;
-	  closeFlag = 1;
-	}
-      
-      //cin >> message;
-      
-      send(connfd,message,strlen(message),0);
+	  clearMessages();
+	  
+	  receiveMessage(connfd);
+	  
+	  sendMessage(connfd);
+	  
 
       if(closeFlag==1)
 	{
 	  close(connfd);
 	}
 	}
-      //      close(connfd);
-      //sleep(1);
+
     }
+}
+
+void receiveMessage(int connfd)
+{
+	recv(connfd, recMessage, 80, 0);
+	if (strcmp(recMessage, "\\quit") == 0)
+	{
+		std::cout << "Client has disconnected." << endl;
+		closeFlag = 1;
+	}
+}
+
+void sendMessage(int connfd)
+{
+	if (closeFlag == 0)
+	{
+		std::cout << "Client> " << recMessage << endl;
+		std::cout << servName << "> ";
+		std::cin.getline(message, 81);
+
+	}
+	if (strcmp(message, "\\quit") == 0)
+	{
+		std::cout << "You have chosen to close this connection..." << endl;
+		closeFlag = 1;
+	}
+
+
+	send(connfd, message, strlen(message), 0);
+}
+
+void clearMessages()
+{
+	memset(&message[0], 0, sizeof(message));
+	memset(&recMessage[0], 0, sizeof(recMessage));
 }
