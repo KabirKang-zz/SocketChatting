@@ -7,13 +7,12 @@
 # Summary: Chats with chatserve.cpp
 
 # General imports
-import getopt # necessary for -k
+import getopt
 import os
 import sys
 import signal
 
 #Program specific imports
-# parse returns a document from input
 import socket 
 
 def client():
@@ -26,21 +25,16 @@ def client():
     var = 1
     while var == 1:
         # Receive and send prompt
-        sendMsg = raw_input("Client> ")
-        sock.send(sendMsg)
+	msgOut(sock)
 
-        if sendMsg == "\quit":
-            sock.close
-            sys.exit()
-
-        message = msgIn(sock)
-        if message == "\quit":
-            print "The server has quit communication.\n"
-            sys.exit()
-        else:
-            print name + "> " + message
+	message = msgIn(sock)
+	if message == "\quit":
+		print "The server has quit communication.\n"
+		sys.exit()
+	else:
+		print name + "> " + message
     sock.close()
-
+# This function receives the name of the server.                
 def getName(s):
     name = s.recv(4096)
     return name
@@ -59,7 +53,14 @@ def checkArgs():
 def msgIn(s):
 	message = str(s.recv(4096)) #recommended buff size
 	return message
-
+# Summary: This function sends messages.
+def msgOut(s):
+	sendMsg = raw_input("Client> ")
+	s.send(sendMsg)
+	if sendMsg == "\quit":
+		s.close
+		sys.exit()
+# This function sets up signal handlers.
 def signalfy():
     signal.signal(signal.SIGQUIT, handleSigs)
     signal.signal(signal.SIGHUP, handleSigs)

@@ -33,7 +33,11 @@ char servName[6] = "Kabir";
 char recMessage[81];
 char message[81];
 
-
+/*
+MAIN FUNCTION
+This function initializes most actions. It carries out the setup
+of the socket, listening, etc.
+ */
 int main(int argc, char ** argv)
 {
   int commence; // Here we check if we have a port number to work with
@@ -52,6 +56,10 @@ if((commence = checkArg(argc, argv))==1)
   return 0;
 }
 
+/*
+CHECK ARGUMENTS
+This function checks that there is one argument, the port number.
+ */
 int checkArg(int argc, char** argv)
 {
   if(argc!=2)
@@ -62,6 +70,10 @@ int checkArg(int argc, char** argv)
   return 0;
 }
 
+/*
+CREATE SOCKET
+This function does socket initialization.
+ */
 void createSocket(int portNum)
 {
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -71,16 +83,28 @@ void createSocket(int portNum)
   servaddr.sin_port = htons(portNum); 
 }
 
+/*
+BIND SOCKET
+This binds the socket.
+ */
 void bindSocket()
 {
   bind(listenfd, (struct sockaddr*)&servaddr, sizeof(servaddr)); 
 }
 
+/*
+LISTEN SOCKET
+This listens in.
+ */
 void listenSocket()
 {
   listen(listenfd, 10); 
 }
 
+/*
+ACCEPT CONNECTION
+This function accepts connections and allows for communication.
+ */
 void acceptConn()
 {
 
@@ -91,7 +115,7 @@ void acceptConn()
       std::cout << "Client has connected. Awaiting message... " << endl;
       send(connfd,servName,strlen(servName),0);
 
-	  while(closeFlag==0)
+      while(closeFlag==0)
 	{
 	  clearMessages();
 	  
@@ -109,6 +133,10 @@ void acceptConn()
     }
 }
 
+/*
+RECEIVE MESSAGE
+This function allows the server to receive messages from the client.
+ */
 void receiveMessage(int connfd)
 {
 	recv(connfd, recMessage, 80, 0);
@@ -119,6 +147,10 @@ void receiveMessage(int connfd)
 	}
 }
 
+/*
+SEND MESSAGE
+This function allows the server to send a message to the client. 
+ */
 void sendMessage(int connfd)
 {
 	if (closeFlag == 0)
@@ -135,9 +167,14 @@ void sendMessage(int connfd)
 	}
 
 
+
 	send(connfd, message, strlen(message), 0);
 }
 
+/*
+CLEAR MESSAGES
+This clears the memory of the sending and receiving message.
+ */
 void clearMessages()
 {
 	memset(&message[0], 0, sizeof(message));
