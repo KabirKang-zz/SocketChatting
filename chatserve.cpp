@@ -15,8 +15,8 @@ void acceptConn();
 
 struct sockaddr_in servaddr;
 int listenfd, connfd;
-char* servName = "Kabir";
-
+int closeFlag = 0;
+char servName[6] = "Kabir";
 
 int main(int argc, char ** argv)
 {
@@ -67,21 +67,49 @@ void listenSocket()
 
 void acceptConn()
 {
+  char message[81];
+  char recMessage[81];
+
   while(1)
     {
+      closeFlag = 0;
       connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
-
+      std::cout << "Client has connected. Awaiting message... " << endl;
       send(connfd,servName,strlen(servName),0);
       //char* message="This is a message to send\n\r";
-      char message[81];
-      char recMessage[81];
-      std::cin >> message;      
-      //cin >> message;
-      send(connfd,message,strlen(message),0); 
-      recv(connfd,recMessage,80,0);
-      std::cout << recMessage << endl;
+      while(closeFlag==0)
+	{
+	  memset(&message[0], 0, sizeof(message));
+	  memset(&recMessage[0], 0, sizeof(recMessage));
+	  recv(connfd,recMessage,80,0);
+	  if(strcmp(recMessage,"\\quit")==0)
+	    {
+	      std::cout<<"Client has disconnected." << endl;
+	      closeFlag = 1;
+	    }
+	  if(closeFlag==0)
+	    {
+	      std::cout << "Client> "  << recMessage << endl;
+	      std::cout << servName << "> ";
+	      std::cin.getline(message,81);
 
-      close(connfd);
-      sleep(1);
+	    }
+      if(strcmp(message,"\\quit")==0)
+	{
+	  std::cout<<"OK WE'LL QUIT"<<endl;
+	  closeFlag = 1;
+	}
+      
+      //cin >> message;
+      
+      send(connfd,message,strlen(message),0);
+
+      if(closeFlag==1)
+	{
+	  close(connfd);
+	}
+	}
+      //      close(connfd);
+      //sleep(1);
     }
 }

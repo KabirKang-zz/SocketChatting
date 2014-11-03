@@ -16,7 +16,7 @@ import signal
 # parse returns a document from input
 import socket 
 
-portNum = 30020
+portNum = 30007
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 sock.connect(("127.0.0.1",portNum)) 
@@ -24,16 +24,29 @@ sock.connect(("127.0.0.1",portNum))
 def client():
     # set up handlers
     signalfy()
+    name = getName(sock)
+    var = 1
+    while var == 1:
+        # Receive and send prompt
+        sendMsg = raw_input("Client> ")
+        sock.send(sendMsg)
 
-    # Receive and send prompt
-    messages = msgIn(sock)
+        if sendMsg == "\quit":
+            sock.close
+            sys.exit()
 
-    for msg in messages:
-	    print msg
-
-    sendMsg = raw_input(messages[0])
-    sock.send(sendMsg)	    
+        message = msgIn(sock)
+        if message == "\quit":
+            print "The server has quit communication.\n"
+            sys.exit()
+        else:
+            print name + "> " + message
     sock.close()
+
+def getName(s):
+    name = s.recv(4096)
+    return name
+
 
 # Summary: signal handler
 def handleSigs(signum, frame):
@@ -41,9 +54,8 @@ def handleSigs(signum, frame):
 
 # Summary: Returns messages
 def msgIn(s):
-	messages = s.recv(4096) #recommended buff size
-	messages = messages.split('\n')
-	return messages
+	message = str(s.recv(4096)) #recommended buff size
+	return message
 
 def signalfy():
     signal.signal(signal.SIGQUIT, handleSigs)
